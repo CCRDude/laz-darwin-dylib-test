@@ -16,7 +16,7 @@ type
 
    TMyApplication = class(TCustomApplication)
    private
-     procedure Test(AFilename, AFunctionName: string);
+      procedure Test(AFilename, AFunctionName: string);
    protected
       procedure DoRun; override;
    public
@@ -31,7 +31,8 @@ var
 const
    SLibName = 'DarwinDynlibTestLibrary.dll';
    {$ELSEIF DEFINED(Darwin)}
-   SLibName : string = 'libdarwindynlibtestlibrary.dylib';
+   SLibName: string = 'libdarwindynlibtestlibrary.dylib';
+
   {$IFEND}
 
    { TMyApplication }
@@ -40,7 +41,6 @@ const
    var
       h: THandle;
       sFilename: string;
-      //f: TAntiBeaconGetImmunizerListLevelText;
       p: Pointer;
    begin
       sFilename := ExtractFilePath(Application.ExeName) + AFilename;
@@ -54,15 +54,22 @@ const
       end;
       p := GetProcedureAddress(h, AFunctionName);
       if not Assigned(p) then begin
-         WriteLn('[-] GetProcAddress(',AFunctionName,'); GetLastOSError = ', SysErrorMessage(GetLastOSError));
-         Exit;
+         WriteLn('[-] GetProcAddress(', AFunctionName, '); GetLastOSError = ', SysErrorMessage(GetLastOSError));
       end else begin
-         WriteLn('[+] GetProcAddress(',AFunctionName,')');
+         WriteLn('[+] GetProcAddress(', AFunctionName, ')');
+      end;
+      p := nil;
+      p := GetProcedureAddress(h, '_' + AFunctionName);
+      if not Assigned(p) then begin
+         WriteLn('[-] GetProcAddress(_', AFunctionName, '); GetLastOSError = ', SysErrorMessage(GetLastOSError));
+      end else begin
+         WriteLn('[+] GetProcAddress(_', AFunctionName, ')');
       end;
    end;
 
    procedure TMyApplication.DoRun;
    begin
+      WriteLn('[i] Test Version 2');
       Test(SLibName, 'FourtyTwo');
       Terminate;
    end;
