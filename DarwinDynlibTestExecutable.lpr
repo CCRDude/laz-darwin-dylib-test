@@ -3,9 +3,9 @@ program DarwinDynlibTestExecutable;
 {$APPTYPE CONSOLE}
 {$mode objfpc}{$H+}
 
-uses {$IFDEF UNIX} {.$IFDEF UseCThreads}
-   cthreads, {.$ENDIF} {$ENDIF}
+uses
    DynLibs,
+   {$IFDEF UNIX} cthreads, {$ENDIF}
    Classes,
    SysUtils,
    CustApp;
@@ -46,22 +46,22 @@ const
       sFilename := ExtractFilePath(Application.ExeName) + AFilename;
       WriteLn('[i] ', sFilename);
       h := LoadLibrary(sFilename);
-      if (h = 0) then begin
-         WriteLn('[-] LoadLibrary(); GetLastOSError = ', SysErrorMessage(GetLastOSError));
+      if (h = NilHandle) then begin
+         WriteLn('[-] LoadLibrary(); GetLastOSError = ', SysErrorMessage(GetLastOSError), '; GetLoadErrorStr = ', GetLoadErrorStr);
          Exit;
       end else begin
-         WriteLn('[+] LoadLibrary()');
+         WriteLn('[+] LoadLibrary() = ', IntToStr(h), '; GetLoadErrorStr = ', GetLoadErrorStr);
       end;
       p := GetProcedureAddress(h, AFunctionName);
       if not Assigned(p) then begin
-         WriteLn('[-] GetProcAddress(', AFunctionName, '); GetLastOSError = ', SysErrorMessage(GetLastOSError));
+         WriteLn('[-] GetProcAddress(', AFunctionName, '); GetLastOSError = ', SysErrorMessage(GetLastOSError), '; GetLoadErrorStr = ', GetLoadErrorStr);
       end else begin
          WriteLn('[+] GetProcAddress(', AFunctionName, ')');
       end;
       p := nil;
       p := GetProcedureAddress(h, '_' + AFunctionName);
       if not Assigned(p) then begin
-         WriteLn('[-] GetProcAddress(_', AFunctionName, '); GetLastOSError = ', SysErrorMessage(GetLastOSError));
+         WriteLn('[-] GetProcAddress(_', AFunctionName, '); GetLastOSError = ', SysErrorMessage(GetLastOSError), '; GetLoadErrorStr = ', GetLoadErrorStr);
       end else begin
          WriteLn('[+] GetProcAddress(_', AFunctionName, ')');
       end;
