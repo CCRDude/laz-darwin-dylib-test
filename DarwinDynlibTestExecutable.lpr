@@ -39,7 +39,7 @@ const
 
    procedure TMyApplication.Test(AFilename, AFunctionName: string);
    var
-      h: THandle;
+      h: TLibHandle;
       sFilename: string;
       p: Pointer;
    begin
